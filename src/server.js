@@ -10,37 +10,47 @@ const toCheck = require("./middlewares/toCheckUser")
 const {authToken} = require("./middlewares/authToken")
 const {videoRouter} = require("./router/videoRouter");
 const { querySearch } = require("./middlewares/querySearch");
+const { userRouter } = require("./router/userRouter");
 const app = express();
+// const allowOrigins = ["http://192.168.1.108:5000"];
 
-const allowOrigins = ["http://192.168.1.108:5000"];
+// const corsOptions = {
+//     origin: function(origin, callBack){
+//        if(allowOrigins.includes(origin)){
+//         callBack(null, true)
+//        } else{
+//         callBack(new Error("Cors ERROR"))
+//        }
+//     }
+// }
 
-const corsOptions = {
-    origin: function(origin, callBack){
-       if(allowOrigins.includes(origin)){
-        callBack(null, true)
-       } else{
-        callBack(new Error("Cors ERROR"))
-       }
-    }
-}
-
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json())
-
 app.use(fileUpload());
 app.use(model);
 app.use(toCheck)
+app.use(querySearch);
 
 app.use("/auth", authRouter );
-app.use(authToken)
+app.use("/users", userRouter);
+app.use("/video", videoRouter);
 
-app.use(querySearch)
-app.get("/users", (req, res) => {
-    let users = JSON.parse(fs.readFileSync(path.join(process.cwd(), "database", "users.json")))
-    res.json(users)
-});
+app.get("/download/:downloadVideo", (req, res) => {
+    try{
+        const {downloadVideo} = req.params;
+        const videoPath = path.join(__dirname, "videos", downloadVideo);
+        const type = fs.existsSync(videoPath);
+        if(type){
+            res.download(videoPath)
+        }
+    }catch(error){
+        return res.status(400).json({message: error})
+    }
+})
 
-app.use("/video", videoRouter)
+
+app.use(authToken);
 
 app.listen(PORT, () => {    
     console.log(`Server is running ${host}`)

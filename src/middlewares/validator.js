@@ -1,6 +1,7 @@
 const path = require("path");
 const regexLetter = /[A-Za-z]/;
 const regexNumber = /[0-9]/;
+const regexDate =  /^\d{4}-(02-(0[1-9]|[12][0-9])|(0[469]|11)-(0[1-9]|[12][0-9]|30)|(0[13578]|1[02])-(0[1-9]|[12][0-9]|3[01]))$/;
 const Validator = (req, res, next) => {
     try{
         const {username, password} = req.body;
@@ -26,14 +27,16 @@ const Validator = (req, res, next) => {
 const VideoValidator = (req, res, next) => {
     try{
         const {video} = req.files;
-        const {video_title, userId} = req.body;
-
+        const {video_title, userId, birth_date} = req.body;
+        
         if(!video_title) throw new Error("The video title its required !");
         if(!userId) throw new Error("The user id is not found !")
+        if(!birth_date) throw new Error("The birth_date its required !")
         if(!video) throw new Error("The video not found !");
         
         if(video_title.length <= 2 || video_title.length > 16) throw new Error("The video title its invalid !");
-        
+        if(!regexDate.test(birth_date)) throw new Error(`The birth_date its invalid ! example: ${new Date().toLocaleDateString().split(".").reverse().join(".")}`)
+
         if(video.name){
             const videoFormats = [".mp4", ".mov", ".avi", ".wmv", ".avchd", ".webm", ".fly"];
             const videoFormat = path.extname(video.name);

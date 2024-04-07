@@ -6,6 +6,7 @@ const videoController = {
       const data = req.getData("data");
       const { video } = req.files;
       let videoName = video.name.replaceAll(" ", "");
+      if(data.some(videoData => videoData.videoName == videoName)) throw new Error("Cannot video has ben created !")
       const newData = {
         ...req.body,
         videoName,

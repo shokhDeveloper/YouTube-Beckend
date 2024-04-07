@@ -4,7 +4,6 @@ const {videoController} = require("../controller/video");
 
 videoRouter.route("/").get(videoController.GET);
 videoRouter.route("/upload").post(VIDEO_UPLOAD_VALIDATOR , videoController.POST);
-videoRouter.route("/:videoName").get(videoController.GET)
-videoRouter.route("/:dataId").put(UPDATE_VIDEO_VALIDATOR ,videoController.PUT).delete(videoController.DELETE);
-
+videoRouter.route("/:videoName").get(videoController.GET);
+videoRouter.route("/:dataId").put(UPDATE_VIDEO_VALIDATOR ,videoController.PUT).delete(videoController.DELETE).get((req, res) => res.json(["nima gap"]));
 module.exports = {videoRouter}
